@@ -18,18 +18,20 @@ async fn main() -> Result<()> {
 
     let options = SqliteConnectOptions::from_str(db_url)?
         .create_if_missing(true)
-        .synchronous(sqlx::sqlite::SqliteSynchronous::Normal)
+        .synchronous(sqlx::sqlite::SqliteSynchronous::Full)
         .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
         .read_only(false);
 
     let db = SqlitePoolOptions::new().connect_with(options).await?;
     sqlx::migrate!("./migrations").run(&db).await?;
 
-    for i in 0..2000 {
+    for i in 0..100000 {
         let (id,) = sqlx::query_as::<_, (i64,)>("INSERT INTO user (name) VALUES ($1) RETURNING id")
             .bind(format!("user-{}", i))
             .fetch_one(&db)
             .await?;
+
+        //sleep(Duration::from_millis(20)).await;
 
         sqlx::query_as("SELECT (name) FROM user WHERE id = $1")
             .bind(id)
