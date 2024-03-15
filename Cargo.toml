@@ -1,0 +1,22 @@
+[package]
+name = "sqlite_conc_issue"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# -- Async
+tokio = { version = "1", features = ["full"] }
+
+# -- Data
+sqlx = { version = "0.7", features = [
+    "macros",
+    "runtime-tokio",
+    "uuid",
+    "sqlite",
+    "migrate",
+] }
+
+# -- Error
+anyhow = "1"
